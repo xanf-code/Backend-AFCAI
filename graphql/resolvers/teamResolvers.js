@@ -2,12 +2,18 @@ const Team = require("../../models/teams");
 const ClubQueries = require("../../models/queries");
 const { ApolloError } = require("apollo-server");
 const { customAlphabet } = require("nanoid");
+const { sendWelcomeEmail } = require("../../lib/sendinblue/welcome");
+const { sendVerificationTeam } = require("../../lib/sendinblue/verification");
+const { AddAssociation } = require("../../lib/utils/association_utils");
+const { AddState } = require("../../lib/utils/state_utils");
 
 module.exports = {
   Query: {
-    getTeams: async (_, { lim_num }) => {
+    getTeams: async (_, { lim_num, field, value }) => {
       try {
-        const teams = await Team.find()
+        const teams = await Team.find({
+          [field]: { $regex: value, $options: "i" },
+        })
           .sort("isVerified")
           .limit(lim_num ?? 20);
         return teams;
@@ -38,11 +44,19 @@ module.exports = {
         description,
         teamLogo,
         association,
-        based,
         email,
         phone,
         website,
         socials,
+        personIncharge,
+        personType,
+        postalCode,
+        postalAddress,
+        teamType,
+        state,
+        district,
+        teamReputation,
+        disabledCatering,
       }
     ) => {
       const nanoid = customAlphabet(process.env.SALT, 4);
@@ -54,14 +68,26 @@ module.exports = {
         description,
         teamLogo,
         association,
-        based,
         email,
         phone,
         website,
         socials,
+        personIncharge,
+        personType,
+        postalCode,
+        postalAddress,
+        teamType,
+        state,
+        district,
+        teamReputation,
+        disabledCatering,
       });
+
       try {
         const team = await newTeam.save();
+        await sendWelcomeEmail(teamName, email);
+        AddAssociation(association);
+        AddState(state);
         return team;
       } catch (err) {
         throw new ApolloError(err, "400");
@@ -78,6 +104,7 @@ module.exports = {
             team.isVerified = false;
           }
           await team.save();
+          await sendVerificationTeam(teamID, team.teamName, team.email);
           return team;
         } else {
           throw new Error("Team not found");

@@ -37,10 +37,6 @@ const teamSchema = new mongoose.Schema({
     type: String,
     default: "No association provided",
   },
-  based: {
-    type: String,
-    default: "No location provided",
-  },
   email: {
     type: String,
     default: "No email provided",
@@ -74,6 +70,42 @@ const teamSchema = new mongoose.Schema({
       type: String,
       default: "No linkedin link provided",
     },
+  },
+  personIncharge: {
+    type: String,
+    default: "No person in charge provided",
+  },
+  personType: {
+    type: String,
+    default: "No person type provided",
+  },
+  postalAddress: {
+    type: String,
+    required: true,
+  },
+  postalCode: {
+    type: String,
+    required: true,
+  },
+  teamType: {
+    type: String,
+    required: true,
+  },
+  state: {
+    type: String,
+    required: true,
+  },
+  district: {
+    type: String,
+    required: true,
+  },
+  teamReputation: {
+    type: String,
+    required: true,
+  },
+  disabledCatering: {
+    type: String,
+    default: "NA",
   },
 });
 

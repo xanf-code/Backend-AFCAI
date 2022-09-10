@@ -2,13 +2,17 @@ const ClubQueries = require("../../models/queries");
 const Team = require("../../models/teams");
 const { ApolloError } = require("apollo-server");
 const { customAlphabet } = require("nanoid");
+const { SendCaseNumber } = require("../../lib/sendinblue/case");
+const { closeCaseAlert } = require("../../lib/sendinblue/close_case");
 
 module.exports = {
   Query: {
-    getAllQueries: async (_, { lim_num, sortOpen }) => {
+    getAllQueries: async (_, { lim_num, sortOpen, field, value }) => {
       const count = await ClubQueries.collection.countDocuments();
       try {
-        const queries = await ClubQueries.find()
+        const queries = await ClubQueries.find({
+          [field]: { $regex: value, $options: "i" },
+        })
           .sort(sortOpen ? "-queryOpen" : "-createdAt")
           .limit(lim_num ?? 20);
         return {
@@ -60,6 +64,11 @@ module.exports = {
         const teamExistQuery = await Team.findOne({ teamID });
         if (teamExistQuery) {
           const query = await newQuery.save();
+          await SendCaseNumber(
+            teamExistQuery.teamName,
+            teamExistQuery.email,
+            queryID
+          );
           return query;
         } else {
           throw new Error(
@@ -75,8 +84,11 @@ module.exports = {
       try {
         const query = await ClubQueries.findOne({ queryID });
         if (query) {
+          const teamID = query.teamID;
           query.queryOpen = false;
           await query.save();
+          const teamQuery = await Team.findOne({ teamID });
+          await closeCaseAlert(teamQuery.email, query.queryID);
           return query;
         } else {
           throw new Error("Query not found");

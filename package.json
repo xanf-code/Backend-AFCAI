@@ -6,17 +6,20 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js",
-    "dev": "nodemon server.js"
+    "dev": "nodemon server.js",
+    "strapi-dev": "cd strapi-cms/ && npm run develop"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@sendgrid/mail": "^7.7.0",
     "apollo-server": "^3.10.2",
     "apollo-server-errors": "^3.3.1",
     "dotenv": "^16.0.2",
     "mongoose": "^6.6.0",
-    "nanoid": "^3.3.4"
+    "nanoid": "^3.3.4",
+    "sib-api-v3-sdk": "^8.4.2"
   },
   "devDependencies": {
     "nodemon": "^2.0.19"

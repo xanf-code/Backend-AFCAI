@@ -26,11 +26,19 @@ const typeDefs = gql`
     createdAt: String!
     teamLogo: String!
     association: String!
-    based: String!
     email: String!
     phone: String!
     website: String!
     socials: Socials!
+    personIncharge: String!
+    personType: String!
+    postalCode: String!
+    postalAddress: String!
+    teamType: String!
+    state: String!
+    district: String!
+    teamReputation: String!
+    disabledCatering: String!
   }
 
   type ClubQueries {
@@ -49,10 +57,15 @@ const typeDefs = gql`
   }
 
   type Query {
-    getTeams(lim_num: Int): [Team]
+    getTeams(lim_num: Int, field: String, value: String): [Team]
     getTeam(teamID: String!): Team
     getOneQuery(queryID: String!): ClubQueries
-    getAllQueries(lim_num: Int, sortOpen: Boolean): ClubDataQuery
+    getAllQueries(
+      lim_num: Int
+      sortOpen: Boolean
+      field: String
+      value: String
+    ): ClubDataQuery
     getTeamQuery(
       lim_num: Int
       teamID: String!
@@ -67,11 +80,19 @@ const typeDefs = gql`
       teamLogo: String!
       teamAbrieviation: String!
       association: String!
-      based: String!
       email: String!
       phone: String!
       website: String!
       socials: SocialsInput!
+      personIncharge: String!
+      personType: String!
+      postalCode: String!
+      postalAddress: String!
+      teamType: String!
+      state: String!
+      district: String!
+      teamReputation: String!
+      disabledCatering: String!
     ): Team!
 
     verifyTeam(teamID: String!): Team!
