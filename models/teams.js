@@ -10,12 +10,14 @@ const teamSchema = new mongoose.Schema({
   teamAbrieviation: {
     type: String,
     required: true,
-    unique: true,
-    dropDups: true,
   },
   isVerified: {
-    type: Boolean,
-    default: false,
+    type: String,
+    default: "false",
+  },
+  isVerifiedTime: {
+    type: Date,
+    default: new Date().toISOString(),
   },
   teamID: {
     type: String,
@@ -106,6 +108,41 @@ const teamSchema = new mongoose.Schema({
   disabledCatering: {
     type: String,
     default: "NA",
+  },
+  teamFounded: {
+    type: String,
+    required: true,
+  },
+  teamAssociationLink: {
+    type: String,
+    required: true,
+  },
+  crsAccess: {
+    type: String,
+    required: true,
+  },
+  seniorMensTeamStatus: {
+    type: String,
+    required: true,
+  },
+  seniorWomensTeamStatus: {
+    type: String,
+    required: true,
+  },
+  youthTeams: {
+    type: [String],
+  },
+  academyType: {
+    type: String,
+    required: true,
+  },
+  licensedCoaches: {
+    type: [String],
+  },
+  teamProfileSlug: {
+    type: String,
+    required: true,
+    unique: true,
   },
 });
 

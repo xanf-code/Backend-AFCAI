@@ -21,7 +21,8 @@ const typeDefs = gql`
     teamName: String!
     teamID: String!
     description: String!
-    isVerified: Boolean!
+    isVerified: String!
+    isVerifiedTime: String!
     teamAbrieviation: String!
     createdAt: String!
     teamLogo: String!
@@ -39,6 +40,15 @@ const typeDefs = gql`
     district: String!
     teamReputation: String!
     disabledCatering: String!
+    teamFounded: String!
+    teamAssociationLink: String!
+    crsAccess: String!
+    seniorMensTeamStatus: String!
+    seniorWomensTeamStatus: String!
+    youthTeams: [String]!
+    academyType: String!
+    licensedCoaches: [String]!
+    teamProfileSlug: String!
   }
 
   type ClubQueries {
@@ -57,7 +67,12 @@ const typeDefs = gql`
   }
 
   type Query {
-    getTeams(lim_num: Int, field: String, value: String): [Team]
+    getTeams(
+      lim_num: Int
+      field: String
+      value: String
+      isVerifiedTime: Boolean
+    ): [Team]
     getTeam(teamID: String!): Team
     getOneQuery(queryID: String!): ClubQueries
     getAllQueries(
@@ -93,6 +108,14 @@ const typeDefs = gql`
       district: String!
       teamReputation: String!
       disabledCatering: String!
+      teamFounded: String!
+      teamAssociationLink: String!
+      crsAccess: String!
+      seniorMensTeamStatus: String!
+      seniorWomensTeamStatus: String!
+      youthTeams: [String]!
+      academyType: String!
+      licensedCoaches: [String]!
     ): Team!
 
     verifyTeam(teamID: String!): Team!

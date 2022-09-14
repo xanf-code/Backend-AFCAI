@@ -6,15 +6,16 @@ const { sendWelcomeEmail } = require("../../lib/sendinblue/welcome");
 const { sendVerificationTeam } = require("../../lib/sendinblue/verification");
 const { AddAssociation } = require("../../lib/utils/association_utils");
 const { AddState } = require("../../lib/utils/state_utils");
+const slugify = require("slugify");
 
 module.exports = {
   Query: {
-    getTeams: async (_, { lim_num, field, value }) => {
+    getTeams: async (_, { lim_num, field, value, isVerifiedTime }) => {
       try {
         const teams = await Team.find({
           [field]: { $regex: value, $options: "i" },
         })
-          .sort("isVerified")
+          .sort(`${isVerifiedTime ? "-isVerifiedTime" : "isVerified"}`)
           .limit(lim_num ?? 20);
         return teams;
       } catch (err) {
@@ -57,10 +58,21 @@ module.exports = {
         district,
         teamReputation,
         disabledCatering,
+        teamFounded,
+        teamAssociationLink,
+        crsAccess,
+        seniorMensTeamStatus,
+        seniorWomensTeamStatus,
+        youthTeams,
+        academyType,
+        licensedCoaches,
       }
     ) => {
       const nanoid = customAlphabet(process.env.SALT, 4);
       const teamID = `${teamAbrieviation}-${nanoid()}`;
+      const teamSlug = slugify(teamName, {
+        lower: true,
+      });
       const newTeam = new Team({
         teamName,
         teamAbrieviation,
@@ -81,6 +93,15 @@ module.exports = {
         district,
         teamReputation,
         disabledCatering,
+        teamFounded,
+        teamAssociationLink,
+        crsAccess,
+        seniorMensTeamStatus,
+        seniorWomensTeamStatus,
+        youthTeams,
+        academyType,
+        licensedCoaches,
+        teamProfileSlug: `${teamSlug}-${teamAbrieviation.toLowerCase()}`,
       });
 
       try {
@@ -90,7 +111,10 @@ module.exports = {
         AddState(state);
         return team;
       } catch (err) {
-        throw new ApolloError(err, "400");
+        throw new ApolloError(
+          "Name Already Exists, please register with a different name",
+          "400"
+        );
       }
     },
 
@@ -98,10 +122,11 @@ module.exports = {
       try {
         const team = await Team.findOne({ teamID });
         if (team) {
-          if (!team.isVerified) {
-            team.isVerified = true;
+          if (team.isVerified == "false") {
+            team.isVerified = "true";
+            team.isVerifiedTime = new Date().toISOString();
           } else {
-            team.isVerified = false;
+            team.isVerified = "false";
           }
           await team.save();
           await sendVerificationTeam(teamID, team.teamName, team.email);
