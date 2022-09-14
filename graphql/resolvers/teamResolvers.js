@@ -124,7 +124,7 @@ module.exports = {
         if (team) {
           if (team.isVerified == "false") {
             team.isVerified = "true";
-            team.isVerifiedTime = new Date().toISOString();
+            team.isVerifiedTime = Date.now();
           } else {
             team.isVerified = "false";
           }
