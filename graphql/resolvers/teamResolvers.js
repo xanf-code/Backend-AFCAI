@@ -7,17 +7,27 @@ const { sendVerificationTeam } = require("../../lib/sendinblue/verification");
 const { AddAssociation } = require("../../lib/utils/association_utils");
 const { AddState } = require("../../lib/utils/state_utils");
 const slugify = require("slugify");
+const getCount = require("../../utils/countDocs");
 
 module.exports = {
   Query: {
-    getTeams: async (_, { lim_num, field, value, isVerifiedTime }) => {
+    getTeams: async (
+      _,
+      { lim_num, field, value, isVerifiedTime, offset, onlyVerified }
+    ) => {
+      const count = getCount(onlyVerified, Team);
       try {
         const teams = await Team.find({
-          [field]: { $regex: value, $options: "i" },
+          [onlyVerified ? "isVerified" : field]: {
+            $regex: onlyVerified ? "true" : value,
+            $options: "i",
+          },
         })
-          .sort(`${isVerifiedTime ? "-isVerifiedTime" : "isVerified"}`)
-          .limit(lim_num ?? 20);
-        return teams;
+          .sort("-isVerifiedTime")
+          // .sort(`${isVerifiedTime ? "-isVerifiedTime" : "isVerified"}`)
+          .skip(offset)
+          .limit(lim_num);
+        return { data: teams, docCount: count };
       } catch (err) {
         throw new ApolloError(err);
       }
@@ -75,7 +85,7 @@ module.exports = {
       });
       const newTeam = new Team({
         teamName,
-        teamAbrieviation,
+        teamAbrieviation: teamAbrieviation.toUpperCase(),
         teamID,
         description,
         teamLogo,
@@ -102,6 +112,8 @@ module.exports = {
         academyType,
         licensedCoaches,
         teamProfileSlug: `${teamSlug}-${teamAbrieviation.toLowerCase()}`,
+        createdAt: Math.round(new Date().getTime() / 1000),
+        isVerifiedTime: Math.round(new Date().getTime() / 1000),
       });
 
       try {

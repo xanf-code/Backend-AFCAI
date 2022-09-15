@@ -1,6 +1,11 @@
 const { gql } = require("apollo-server");
 
 const typeDefs = gql`
+  type FullTeamResponse {
+    data: [Team]!
+    docCount: Int!
+  }
+
   input SocialsInput {
     facebook: String!
     twitter: String!
@@ -69,10 +74,12 @@ const typeDefs = gql`
   type Query {
     getTeams(
       lim_num: Int
+      offset: Int
       field: String
       value: String
       isVerifiedTime: Boolean
-    ): [Team]
+      onlyVerified: Boolean
+    ): FullTeamResponse!
     getTeam(teamID: String!): Team
     getOneQuery(queryID: String!): ClubQueries
     getAllQueries(

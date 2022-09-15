@@ -16,8 +16,7 @@ const teamSchema = new mongoose.Schema({
     default: "false",
   },
   isVerifiedTime: {
-    type: Date,
-    default: new Date().toISOString(),
+    type: String,
   },
   teamID: {
     type: String,
@@ -29,7 +28,6 @@ const teamSchema = new mongoose.Schema({
   },
   createdAt: {
     type: String,
-    default: new Date().toISOString(),
   },
   teamLogo: {
     type: String,
