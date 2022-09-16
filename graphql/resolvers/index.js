@@ -17,7 +17,7 @@ module.exports = {
     hasNextCursor: (parent) => {
       const limit = parent.limit;
       const resCount = parent.resCount;
-      if (resCount < limit) {
+      if (resCount <= limit) {
         return false;
       } else {
         return true;
