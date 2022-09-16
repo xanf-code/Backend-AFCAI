@@ -6,6 +6,16 @@ const typeDefs = gql`
     docCount: Int!
   }
 
+  type VerifiedFullTeamResponse {
+    docs: [VerifiedTeam]!
+    limit: Int
+    totalPages: Int
+    nextCursor: Int
+    hasNextCursor: Boolean
+    totalDocs: Int
+    resCount: Int
+  }
+
   input SocialsInput {
     facebook: String!
     twitter: String!
@@ -56,6 +66,40 @@ const typeDefs = gql`
     teamProfileSlug: String!
   }
 
+  type VerifiedTeam {
+    id: Int!
+    teamName: String!
+    teamID: String!
+    description: String!
+    isVerifiedTime: String!
+    teamAbrieviation: String!
+    createdAt: String!
+    teamLogo: String!
+    association: String!
+    email: String!
+    phone: String!
+    website: String!
+    socials: Socials!
+    personIncharge: String!
+    personType: String!
+    postalCode: String!
+    postalAddress: String!
+    teamType: String!
+    state: String!
+    district: String!
+    teamReputation: String!
+    disabledCatering: String!
+    teamFounded: String!
+    teamAssociationLink: String!
+    crsAccess: String!
+    seniorMensTeamStatus: String!
+    seniorWomensTeamStatus: String!
+    youthTeams: [String]!
+    academyType: String!
+    licensedCoaches: [String]!
+    teamProfileSlug: String!
+  }
+
   type ClubQueries {
     queryID: String!
     teamID: String!
@@ -77,8 +121,6 @@ const typeDefs = gql`
       offset: Int
       field: String
       value: String
-      isVerifiedTime: Boolean
-      onlyVerified: Boolean
     ): FullTeamResponse!
     getTeam(teamID: String!): Team
     getOneQuery(queryID: String!): ClubQueries
@@ -93,6 +135,12 @@ const typeDefs = gql`
       teamID: String!
       sortOpen: Boolean
     ): [ClubQueries]
+    getVerifiedTeams(
+      lim_num: Int
+      field: String
+      value: String
+      cursor: Int
+    ): VerifiedFullTeamResponse!
   }
 
   type Mutation {

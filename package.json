@@ -18,6 +18,8 @@
     "apollo-server-errors": "^3.3.1",
     "dotenv": "^16.0.2",
     "mongoose": "^6.6.0",
+    "mongoose-paginate-v2": "^1.7.1",
+    "mongoose-sequence": "^5.3.1",
     "nanoid": "^3.3.4",
     "sib-api-v3-sdk": "^8.4.2",
     "slugify": "^1.6.5"

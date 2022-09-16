@@ -7,24 +7,25 @@ const { sendVerificationTeam } = require("../../lib/sendinblue/verification");
 const { AddAssociation } = require("../../lib/utils/association_utils");
 const { AddState } = require("../../lib/utils/state_utils");
 const slugify = require("slugify");
-const getCount = require("../../utils/countDocs");
+const { getCount, verifiedCount } = require("../../services/countDocs");
+const migrateDBV = require("../../services/migrateVerified");
+const Verified = require("../../models/verified_teams");
 
 module.exports = {
   Query: {
-    getTeams: async (
-      _,
-      { lim_num, field, value, isVerifiedTime, offset, onlyVerified }
-    ) => {
-      const count = getCount(onlyVerified, Team);
+    getTeams: async (_, { lim_num, field, value, offset }) => {
+      const count = getCount(Team);
+      // await Verified.counterReset("id", function (err) {
+      //   // Now the counter is 0
+      // });
       try {
         const teams = await Team.find({
-          [onlyVerified ? "isVerified" : field]: {
-            $regex: onlyVerified ? "true" : value,
+          [field]: {
+            $regex: value,
             $options: "i",
           },
         })
-          .sort("-isVerifiedTime")
-          // .sort(`${isVerifiedTime ? "-isVerifiedTime" : "isVerified"}`)
+          .sort("-createdAt")
           .skip(offset)
           .limit(lim_num);
         return { data: teams, docCount: count };
@@ -40,6 +41,29 @@ module.exports = {
         } else {
           throw new Error("Team not found");
         }
+      } catch (err) {
+        throw new ApolloError(err);
+      }
+    },
+    getVerifiedTeams: async (_, { lim_num, field, value, cursor }) => {
+      const count = await verifiedCount(Verified, value, field, cursor);
+      try {
+        const verified_teams = await Verified.find({
+          [field]: {
+            $regex: value,
+            $options: "i",
+          },
+        })
+          .sort("id")
+          .where("id")
+          .gt(cursor || -1)
+          .limit(lim_num);
+        return {
+          docs: verified_teams,
+          limit: lim_num,
+          resCount: count,
+          totalDocs: await Verified.countDocuments(),
+        };
       } catch (err) {
         throw new ApolloError(err);
       }
@@ -137,8 +161,11 @@ module.exports = {
           if (team.isVerified == "false") {
             team.isVerified = "true";
             team.isVerifiedTime = Date.now();
+            migrateDBV(team);
           } else {
             team.isVerified = "false";
+            const verifiedDB = await Verified.findOne({ teamID });
+            await verifiedDB.delete();
           }
           await team.save();
           await sendVerificationTeam(teamID, team.teamName, team.email);
