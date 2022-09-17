@@ -1,6 +1,16 @@
 const { gql } = require("apollo-server");
 
 const typeDefs = gql`
+  type Contact {
+    name: String!
+    email: String!
+    phone: String!
+    queryID: String!
+    subject: String!
+    message: String!
+    createdAt: String!
+  }
+
   type FullTeamResponse {
     data: [Team]!
     docCount: Int!
@@ -141,6 +151,8 @@ const typeDefs = gql`
       value: String
       cursor: Int
     ): VerifiedFullTeamResponse!
+    getContacts: [Contact]!
+    getContact(queryID: String!): Contact
   }
 
   type Mutation {
@@ -179,6 +191,16 @@ const typeDefs = gql`
     createClubQuery(query: String!, teamID: String!): ClubQueries!
     closeClubQuery(queryID: String!): ClubQueries!
     deleteSingleQuery(queryID: String!): String!
+
+    createContact(
+      name: String!
+      email: String!
+      phone: String!
+      message: String!
+      subject: String!
+    ): Contact!
+
+    deleteContact(queryID: String!): String!
   }
 `;
 

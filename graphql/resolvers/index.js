@@ -1,4 +1,5 @@
 const clubQueryResolver = require("./clubQueryResolver");
+const contactResolver = require("./contactResolver");
 const teamResolvers = require("./teamResolvers");
 
 module.exports = {
@@ -27,9 +28,11 @@ module.exports = {
   Query: {
     ...teamResolvers.Query,
     ...clubQueryResolver.Query,
+    ...contactResolver.Query,
   },
   Mutation: {
     ...teamResolvers.Mutation,
     ...clubQueryResolver.Mutation,
+    ...contactResolver.Mutation,
   },
 };
