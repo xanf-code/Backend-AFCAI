@@ -127,10 +127,10 @@ const typeDefs = gql`
 
   type Query {
     getTeams(
-      lim_num: Int
-      offset: Int
       field: String
       value: String
+      lim_num: Int
+      cursor: String
     ): FullTeamResponse!
     getTeam(teamID: String!): Team
     getOneQuery(queryID: String!): ClubQueries

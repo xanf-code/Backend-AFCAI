@@ -25,6 +25,7 @@ module.exports = {
       }
     },
   },
+
   Query: {
     ...teamResolvers.Query,
     ...clubQueryResolver.Query,

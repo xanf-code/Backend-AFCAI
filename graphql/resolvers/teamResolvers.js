@@ -13,7 +13,7 @@ const Verified = require("../../models/verified_teams");
 
 module.exports = {
   Query: {
-    getTeams: async (_, { lim_num, field, value, offset }) => {
+    getTeams: async (_, { lim_num, field, value }) => {
       const count = getCount(Team);
       // await Verified.counterReset("id", function (err) {
       //   // Now the counter is 0
@@ -25,8 +25,9 @@ module.exports = {
             $options: "i",
           },
         })
+          .where("isVerified")
+          .equals("false")
           .sort("-createdAt")
-          .skip(offset)
           .limit(lim_num);
         return { data: teams, docCount: count };
       } catch (err) {
@@ -54,9 +55,10 @@ module.exports = {
             $options: "i",
           },
         })
-          .sort("id")
-          .where("id")
-          .gt(cursor || -1)
+          .sort("-isVerifiedTime")
+          // .sort("id")
+          // .where("id")
+          // .gt(cursor || -1)
           .limit(lim_num);
         return {
           docs: verified_teams,
@@ -102,8 +104,10 @@ module.exports = {
         licensedCoaches,
       }
     ) => {
+      const year = new Date().getFullYear();
+      const month = (new Date().getMonth() + 1).toString().padStart(2, "0");
       const nanoid = customAlphabet(process.env.SALT, 4);
-      const teamID = `${teamAbrieviation}-${nanoid()}`;
+      const teamID = `${year}-${month}-${teamAbrieviation}-${nanoid()}`;
       const teamSlug = slugify(teamName, {
         lower: true,
       });
