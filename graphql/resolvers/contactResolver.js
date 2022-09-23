@@ -1,12 +1,21 @@
 const Contact = require("../../models/contact");
 const { customAlphabet } = require("nanoid");
 const { ApolloError } = require("apollo-server-errors");
+const { SendCaseNumber } = require("../../lib/sendinblue/case");
+const { closeCaseAlert } = require("../../lib/sendinblue/close_case");
 
 module.exports = {
   Query: {
-    getContacts: async () => {
+    getContacts: async (_, { value, lim_num }) => {
       try {
-        const contacts = await Contact.find();
+        const contacts = await Contact.find({
+          queryID: {
+            $regex: value,
+            $options: "i",
+          },
+        })
+          .sort("-createdAt")
+          .limit(lim_num);
         return contacts;
       } catch (err) {
         throw new ApolloError(err);
@@ -36,25 +45,29 @@ module.exports = {
         queryID,
         subject,
         message,
+        createdAt: Math.round(new Date().getTime() / 1000),
       });
       try {
         const contact = await newContact.save();
+        await SendCaseNumber(contact.name, contact.email, contact.queryID);
         return contact;
       } catch (err) {
         throw new ApolloError(err);
       }
     },
-  },
-  deleteContact: async (_, { queryID }) => {
-    try {
-      const contact = await Contact.findOneAndDelete({ queryID });
-      if (contact) {
-        return "Contact deleted successfully";
-      } else {
-        throw new Error("Contact not found");
+    resolveContact: async (_, { queryID }) => {
+      try {
+        const contact = await Contact.findOne({ queryID });
+        if (contact) {
+          const deletedContact = await contact.delete();
+          await closeCaseAlert(deletedContact.email, deletedContact.queryID);
+          return contact;
+        } else {
+          throw new Error("Contact not found");
+        }
+      } catch (err) {
+        throw new ApolloError(err);
       }
-    } catch (err) {
-      throw new ApolloError(err);
-    }
+    },
   },
 };

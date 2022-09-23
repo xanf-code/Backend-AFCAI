@@ -151,7 +151,7 @@ const typeDefs = gql`
       value: String
       cursor: Int
     ): VerifiedFullTeamResponse!
-    getContacts: [Contact]!
+    getContacts(value: String!, lim_num: Int): [Contact]!
     getContact(queryID: String!): Contact
   }
 
@@ -200,7 +200,7 @@ const typeDefs = gql`
       subject: String!
     ): Contact!
 
-    deleteContact(queryID: String!): String!
+    resolveContact(queryID: String!): Contact!
   }
 `;
 
