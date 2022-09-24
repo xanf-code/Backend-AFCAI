@@ -16,7 +16,7 @@ module.exports = {
     getTeams: async (_, { lim_num, field, value }) => {
       const count = getCount(Team);
       // await Verified.counterReset("id", function (err) {
-      //   // Now the counter is 0
+      //   console.log("done");
       // });
       try {
         const teams = await Team.find({
