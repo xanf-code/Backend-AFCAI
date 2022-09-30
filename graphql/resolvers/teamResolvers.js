@@ -161,19 +161,20 @@ module.exports = {
     verifyTeam: async (_, { teamID }) => {
       try {
         const team = await Team.findOne({ teamID });
+        const verifiedDB = await Verified.findOne({ teamID });
+
         if (team) {
           if (team.isVerified == "false") {
             team.isVerified = "true";
             team.isVerifiedTime = Date.now();
             migrateDBV(team);
-          } else {
-            team.isVerified = "false";
-            const verifiedDB = await Verified.findOne({ teamID });
-            await verifiedDB.delete();
+            await sendVerificationTeam(teamID, team.teamName, team.email);
+            await team.delete();
           }
-          await team.save();
-          await sendVerificationTeam(teamID, team.teamName, team.email);
-          return team;
+          return "Team Verified and migrated to verified teams";
+        } else if (verifiedDB) {
+          await verifiedDB.delete();
+          return "Team Un-Verified and removed";
         } else {
           throw new Error("Team not found");
         }

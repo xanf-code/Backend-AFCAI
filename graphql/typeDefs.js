@@ -185,7 +185,7 @@ const typeDefs = gql`
       licensedCoaches: [String]!
     ): Team!
 
-    verifyTeam(teamID: String!): Team!
+    verifyTeam(teamID: String!): String!
     deleteTeam(teamID: String!): String!
 
     createClubQuery(query: String!, teamID: String!): ClubQueries!
