@@ -200,5 +200,65 @@ module.exports = {
         throw new ApolloError(err, "400");
       }
     },
+
+    updateTeam: async (
+      _,
+      {
+        teamID,
+        teamName,
+        association,
+        email,
+        phone,
+        website,
+        socials,
+        personIncharge,
+        personType,
+        postalCode,
+        postalAddress,
+        teamType,
+        state,
+        district,
+        teamReputation,
+        disabledCatering,
+        teamFounded,
+        teamAssociationLink,
+        crsAccess,
+        seniorMensTeamStatus,
+        seniorWomensTeamStatus,
+        academyType,
+      }
+    ) => {
+      try {
+        await Verified.findOneAndUpdate(
+          { teamID },
+          {
+            teamName,
+            association,
+            email,
+            phone,
+            website,
+            socials,
+            personIncharge,
+            personType,
+            postalCode,
+            postalAddress,
+            teamType,
+            state,
+            district,
+            teamReputation,
+            disabledCatering,
+            teamFounded,
+            teamAssociationLink,
+            crsAccess,
+            seniorMensTeamStatus,
+            seniorWomensTeamStatus,
+            academyType,
+          }
+        );
+        return `Team with ${teamID} updated successfully`;
+      } catch (err) {
+        throw new ApolloError(err, "400");
+      }
+    },
   },
 };

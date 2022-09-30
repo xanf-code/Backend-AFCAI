@@ -185,6 +185,30 @@ const typeDefs = gql`
       licensedCoaches: [String]!
     ): Team!
 
+    updateTeam(
+      teamID: String!
+      teamName: String
+      association: String
+      email: String
+      phone: String
+      website: String
+      socials: SocialsInput
+      personIncharge: String
+      personType: String
+      postalCode: String
+      postalAddress: String
+      teamType: String
+      state: String
+      district: String
+      teamReputation: String
+      disabledCatering: String
+      teamFounded: String
+      teamAssociationLink: String
+      crsAccess: String
+      seniorMensTeamStatus: String
+      seniorWomensTeamStatus: String
+      academyType: String
+    ): String!
     verifyTeam(teamID: String!): String!
     deleteTeam(teamID: String!): String!
 
