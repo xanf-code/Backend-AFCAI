@@ -51,7 +51,7 @@ module.exports = {
       try {
         const verified_teams = await Verified.find({
           [field]: {
-            $regex: value,
+            $regex: `${value}`,
             $options: "i",
           },
         })

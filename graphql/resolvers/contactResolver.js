@@ -4,6 +4,7 @@ const { customAlphabet } = require("nanoid");
 const { ApolloError } = require("apollo-server-errors");
 const { SendCaseNumber } = require("../../lib/sendinblue/case");
 const { closeCaseAlert } = require("../../lib/sendinblue/close_case");
+const Verified = require("../../models/verified_teams");
 
 module.exports = {
   Query: {
@@ -54,7 +55,7 @@ module.exports = {
       });
       try {
         if (teamID != "") {
-          const teamExistQuery = await Team.findOne({ teamID });
+          const teamExistQuery = await Verified.findOne({ teamID });
           if (teamExistQuery) {
             const contact = await newContact.save();
             await SendCaseNumber(contact.name, contact.email, contact.queryID);
