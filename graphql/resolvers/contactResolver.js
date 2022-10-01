@@ -1,4 +1,5 @@
 const Contact = require("../../models/contact");
+const Team = require("../../models/teams");
 const { customAlphabet } = require("nanoid");
 const { ApolloError } = require("apollo-server-errors");
 const { SendCaseNumber } = require("../../lib/sendinblue/case");
@@ -35,10 +36,14 @@ module.exports = {
     },
   },
   Mutation: {
-    createContact: async (_, { name, email, phone, message, subject }) => {
+    createContact: async (
+      _,
+      { teamID, name, email, phone, message, subject }
+    ) => {
       const nanoid = customAlphabet(process.env.SALT, 4);
       const queryID = `CONTACT-${nanoid()}`;
       const newContact = new Contact({
+        teamID,
         name,
         email,
         phone,
@@ -48,9 +53,22 @@ module.exports = {
         createdAt: Math.round(new Date().getTime() / 1000),
       });
       try {
-        const contact = await newContact.save();
-        await SendCaseNumber(contact.name, contact.email, contact.queryID);
-        return contact;
+        if (teamID != "") {
+          const teamExistQuery = await Team.findOne({ teamID });
+          if (teamExistQuery) {
+            const contact = await newContact.save();
+            await SendCaseNumber(contact.name, contact.email, contact.queryID);
+            return contact;
+          } else {
+            throw new Error(
+              "Invalid Team ID, please check again or register before raising a query"
+            );
+          }
+        } else {
+          const contact = await newContact.save();
+          await SendCaseNumber(contact.name, contact.email, contact.queryID);
+          return contact;
+        }
       } catch (err) {
         throw new ApolloError(err);
       }

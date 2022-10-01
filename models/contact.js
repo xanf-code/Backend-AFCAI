@@ -1,6 +1,10 @@
 const mongoose = require("mongoose");
 
 const contactSchema = new mongoose.Schema({
+  teamID: {
+    type: String,
+    default: "",
+  },
   name: {
     type: String,
     required: true,

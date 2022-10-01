@@ -77,7 +77,6 @@ module.exports = {
       _,
       {
         teamName,
-        teamAbrieviation,
         description,
         teamLogo,
         association,
@@ -107,13 +106,17 @@ module.exports = {
       const year = new Date().getFullYear();
       const month = (new Date().getMonth() + 1).toString().padStart(2, "0");
       const nanoid = customAlphabet(process.env.SALT, 4);
-      const teamID = `${year}-${month}-${teamAbrieviation}-${nanoid()}`;
+      const teamShort = teamName
+        .split(/\s/)
+        .reduce((response, word) => (response += word.slice(0, 1)), "");
+      const teamID = `${year}-${month}-${teamShort}-${nanoid()}`;
       const teamSlug = slugify(teamName, {
         lower: true,
       });
+
       const newTeam = new Team({
         teamName,
-        teamAbrieviation: teamAbrieviation.toUpperCase(),
+        teamAbrieviation: teamShort.toUpperCase(),
         teamID,
         description,
         teamLogo,
@@ -139,7 +142,7 @@ module.exports = {
         youthTeams,
         academyType,
         licensedCoaches,
-        teamProfileSlug: `${teamSlug}-${teamAbrieviation.toLowerCase()}`,
+        teamProfileSlug: `${teamSlug}-${teamShort.toLowerCase()}`,
         createdAt: Math.round(new Date().getTime() / 1000),
         isVerifiedTime: Math.round(new Date().getTime() / 1000),
       });

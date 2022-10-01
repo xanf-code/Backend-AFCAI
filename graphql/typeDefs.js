@@ -2,6 +2,7 @@ const { gql } = require("apollo-server");
 
 const typeDefs = gql`
   type Contact {
+    teamID: String
     name: String!
     email: String!
     phone: String!
@@ -160,7 +161,6 @@ const typeDefs = gql`
       teamName: String!
       description: String!
       teamLogo: String!
-      teamAbrieviation: String!
       association: String!
       email: String!
       phone: String!
@@ -217,6 +217,7 @@ const typeDefs = gql`
     deleteSingleQuery(queryID: String!): String!
 
     createContact(
+      teamID: String
       name: String!
       email: String!
       phone: String!
