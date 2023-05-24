@@ -1,4 +1,4 @@
-# fly.toml file generated for afcai on 2022-09-14T17:55:53+05:30
+# fly.toml file generated for afcai on 2022-10-01T21:37:30+05:30
 
 app = "afcai"
 kill_signal = "SIGINT"
